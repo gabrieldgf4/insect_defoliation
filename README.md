@@ -24,7 +24,7 @@ If you use this project, cite:
         year={2022}
     }
 
-![alt tag](https://user-images.githubusercontent.com/63321757/162008633-d62f9ccf-df74-4cbf-893e-4432b55a075b.png)
+![alt tag](https://user-images.githubusercontent.com/63321757/180870855-387484c8-6edd-4c7c-9c76-83218c656767.png)
 
 You can download the code by:
 
