@@ -28,8 +28,8 @@ If you use this project, cite:
 
 You can download the code by:
 
-    git clone https://github.com/gabrieldgf4/insect-defoliation.git
-    cd insect-defoliation
+    git clone https://github.com/gabrieldgf4/insect_defoliation.git
+    cd insect_defoliation
     
     Then, open MATLAB and execute the file "test.m"
     
