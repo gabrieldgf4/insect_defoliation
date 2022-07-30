@@ -9,14 +9,14 @@ Original papers URL:
 
 If you use this project, cite:
 
-    @article{gabrielISWA2022,
+    @article{gabrielIPA2022,
         Author = Author={Vieira, Gabriel and 
                   Fonseca, Afonso and
                   Sousa, Naiane and
                   Ferreira, Julio and
                   Soares, Fabrizzio},
         Title = {An automatic method for estimating foliar defoliation with border damage},
-        journal={Intelligent Systems with Applications},
+        journal={Information Processing in Agriculture},
         volume={},
         pages={},
         doi={},
