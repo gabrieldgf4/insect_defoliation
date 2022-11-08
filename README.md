@@ -32,4 +32,7 @@ You can download the code by:
     cd insect_defoliation
     
     Then, open MATLAB and execute the file "test.m"
+
+# Software outputs
+
     
