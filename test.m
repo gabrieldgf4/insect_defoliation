@@ -171,10 +171,13 @@ fprintf('#### LEAF RECONSTRUCTION #### \n')
 % Leaf reconstruction using the retrived model
 reconstructed_leaf_1  = leaf_reconstruction(leaf_model, damaged_leaf_out);
 
-[resultQuality_1, resultDistances_1] = leaf_evaluation_quality(img, reconstructed_leaf_1);
+% only leaf regions that are in the leaf model
+healthy_leaf_out_based_model = healthy_leaf_out.*leaf_model_mask;
+
+[resultQuality_1, resultDistances_1] = leaf_evaluation_quality(healthy_leaf_out_based_model, reconstructed_leaf_1);
 SSIM_reconstruction_1 = resultQuality_1(1);
 
-figure; imshowpair(uint8(healthy_leaf_out), uint8(reconstructed_leaf_1), 'montage')
+figure; imshowpair(uint8(healthy_leaf_out_based_model), uint8(reconstructed_leaf_1), 'montage')
 title('Health leaf and reconstructed with the retrieved model')
 
 fprintf('SSSIM model (Leaf Model): %1.4f\n', SSIM_reconstruction_1);
@@ -183,10 +186,13 @@ fprintf('SSSIM model (Leaf Model): %1.4f\n', SSIM_reconstruction_1);
 % Leaf reconstruction using image blending
 reconstructed_leaf_2  = leaf_blending(leaf_model, damaged_leaf_out);
 
-[resultQuality_2, resultDistances_2] = leaf_evaluation_quality(img, reconstructed_leaf_2);
+% only leaf regions that are in the leaf model
+healthy_leaf_out_based_model = healthy_leaf_out.*leaf_model_mask;
+
+[resultQuality_2, resultDistances_2] = leaf_evaluation_quality(healthy_leaf_out_based_model, reconstructed_leaf_2);
 SSIM_reconstruction_2 = resultQuality_2(1);
 
-figure; imshowpair(uint8(healthy_leaf_out), uint8(reconstructed_leaf_2), 'montage')
+figure; imshowpair(uint8(healthy_leaf_out_based_model), uint8(reconstructed_leaf_2), 'montage')
 title('Health leaf and reconstructed with image blending')
 
 fprintf('SSSIM model (Image Blending): %1.4f\n', SSIM_reconstruction_2);
@@ -195,10 +201,13 @@ fprintf('SSSIM model (Image Blending): %1.4f\n', SSIM_reconstruction_2);
 % Leaf reconstruction using image inpainting
 reconstructed_leaf_3  = leaf_inpaint(leaf_model, damaged_leaf_out);
 
-[resultQuality_3, resultDistances_3] = leaf_evaluation_quality(img, reconstructed_leaf_3);
+% only leaf regions that are in the leaf model
+healthy_leaf_out_based_model = healthy_leaf_out.*leaf_model_mask;
+
+[resultQuality_3, resultDistances_3] = leaf_evaluation_quality(healthy_leaf_out_based_model, reconstructed_leaf_3);
 SSIM_reconstruction_3 = resultQuality_3(1);
 
-figure; imshowpair(uint8(healthy_leaf_out), uint8(reconstructed_leaf_3), 'montage')
+figure; imshowpair(uint8(healthy_leaf_out_based_model), uint8(reconstructed_leaf_3), 'montage')
 title('Health leaf and reconstructed with inpaint')
 fprintf('SSSIM model (Image Inpaint): %1.4f\n', SSIM_reconstruction_3);
 
@@ -214,6 +223,9 @@ bin_f2 = bwareaopen(bin_f,10);
 se = strel('square',2);
 bin_f2 = imdilate(bin_f2, se);
 
-overlay = imoverlay(uint8(damaged_leaf_out), bin_f2, 'r');
+% only damaged leaf regions that are in the leaf model
+damaged_leaf_out_based_model = damaged_leaf_out.*leaf_model_mask;
+
+overlay = imoverlay(uint8(damaged_leaf_out_based_model), bin_f2, 'r');
 figure(7); imshow(overlay);
 
