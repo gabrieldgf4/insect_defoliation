@@ -145,7 +145,7 @@ title('Leaf model and Bite segments');
 figure; imshowpair(uint8(bite_signatures_out), uint8(bite_sign));
 title('Ground-Truth bites and Detected bite segments');
 
-% BITE BOUNDING BOXES
+%% BITE BOUNDING BOXES
  st = regionprops(bite_sign, 'BoundingBox' );
  
  bite = imoverlay(uint8(damaged_leaf_out), bite_sign, 'g');
@@ -169,7 +169,7 @@ fprintf('True positive bites: %i\nFalse positive bites: %i\nFalse negative bites
 fprintf('#### LEAF RECONSTRUCTION #### \n')
 
 % Leaf reconstruction using the retrived model
-reconstructed_leaf_1  = leaf_reconstruction(leaf_model, damaged_leaf_out);
+reconstructed_leaf_1  = leaf_model; %leaf_reconstruction(leaf_model, damaged_leaf_out);
 
 % only leaf regions that are in the leaf model
 healthy_leaf_out_based_model = healthy_leaf_out.*leaf_model_mask;
@@ -213,7 +213,7 @@ fprintf('SSSIM model (Image Inpaint): %1.4f\n', SSIM_reconstruction_3);
 
 
 %% LEAF CONTOUR
-bin = reconstructed_leaf_3(:,:,2) ~= 0;
+bin = leaf_model_mask;
 bin_c = bwmorph(bin,'remove');
 bin_l = logical(damaged_leaf_out(:,:,2));
 
@@ -227,5 +227,5 @@ bin_f2 = imdilate(bin_f2, se);
 damaged_leaf_out_based_model = damaged_leaf_out.*leaf_model_mask;
 
 overlay = imoverlay(uint8(damaged_leaf_out_based_model), bin_f2, 'r');
-figure(7); imshow(overlay);
+figure; imshow(overlay);
 
