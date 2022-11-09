@@ -6,7 +6,10 @@ It is a method for leaf analysis which provides estimation of defoliation level,
 
 Original papers URL: 
 
-[https://www.sciencedirect.com/science/article/pii/S2772375522000211](https://www.sciencedirect.com/science/article/pii/S2772375522000211)          
+[https://www.mdpi.com/2073-4395/12/11/2769/htm](https://www.mdpi.com/2073-4395/12/11/2769/htm)
+
+[https://www.sciencedirect.com/science/article/pii/S2772375522000211](https://www.sciencedirect.com/science/article/pii/S2772375522000211)     
+
 [https://ieeexplore.ieee.org/document/9529869](https://ieeexplore.ieee.org/document/9529869)
 
 If you use this project, cite:
@@ -26,7 +29,7 @@ If you use this project, cite:
         year={2022}
     }
 
-![alt tag](https://user-images.githubusercontent.com/63321757/180870855-387484c8-6edd-4c7c-9c76-83218c656767.png)
+<img src="https://user-images.githubusercontent.com/63321757/180870855-387484c8-6edd-4c7c-9c76-83218c656767.png" width=75% height=75%>
 
 # Code
 
