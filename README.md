@@ -1,6 +1,6 @@
-# insect_defoliation
+# ProtectLeaf
 
-It is a method for leaf analysis which provides estimation of defoliation level, detection and segmentation of insect bites, and leaf reconstruction.
+It is a software for leaf analysis which provides estimation of defoliation level, detection and segmentation of insect bites, and leaf reconstruction.
 
 # Citation
 
