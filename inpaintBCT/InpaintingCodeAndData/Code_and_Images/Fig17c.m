@@ -1,1 +1,0 @@
-denoising('noise',[5 25 1 2],28);

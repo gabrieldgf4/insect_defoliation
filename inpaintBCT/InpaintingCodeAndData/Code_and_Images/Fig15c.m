@@ -1,1 +1,0 @@
-experiment('train',[7 25 1 2]);
