@@ -16,7 +16,7 @@ test_images = load_images('images/test_images', 'png');
 
 %% PREPROCESSING
 % binarize model data
-threshold = 0;
+threshold = 5;
 qtty_modelData = length(template_images);
 template_images_mask = cell(qtty_modelData,1);
 
@@ -72,8 +72,8 @@ title(['Synthetic defoliation: ', num2str(defoliation_level), '% damage']);
 defoliated_leaf_testData_mask = binarize_image(defoliated_leaf_testData,threshold);
 
 %% Compute defoliation
-[damaged_leaf_out, healthy_leaf_out, damaged_areas_out] = ...
-        detect_leaf(defoliated_leaf_testData, img, damaged_areas);
+[damaged_leaf_out, healthy_leaf_out, damaged_areas_out, bite_signatures_out] = ...
+        detect_leaf(defoliated_leaf_testData, img, damaged_areas, bite_signature_testData);
 
 % calc defoliation using healthy leaf mask
 healthy_leaf_out_mask = logical(healthy_leaf_out(:,:,2));
@@ -105,14 +105,19 @@ dic = dice(damaged_areas_out, diff);
 % keep evaluating the damaged area
 [confusionMatrix_pixels, resultRates_pixels, resultSDT, overlap] =...
     leaf_evaluation(damaged_leaf_out_mask, healthy_leaf_out_mask);
+%%
+fprintf('#### DEFOLIATION ESTIMATE #### \n')
 
+fprintf('Actual Damage (GT): %1.4f\nDefoliation Estimate (DE) Index: %1.4f\n',...
+    defoliation_level_ALL(1), defoliation_level_ALL(2));
 
+fprintf('Jaccard Index: %1.4f\nDice Index: %1.4f\n', jac, dic)
 
 %% Show the results
 figure; imshowpair(uint8(leaf_model), uint8(damaged_leaf_out));
 title('Leaf model and Damaged leaf');
 %%
-B = imoverlay(uint8(damaged_leaf_out), diff, [0.3010 0.7450 0.9330]);
+B = imoverlay(uint8(damaged_leaf_out), diff, [1 0 0]);
 figure; imshow(uint8(B));
 title('Damaged areas');
 
@@ -131,23 +136,48 @@ ecc_thresh = 0.98;
 bite_sign = leaf_bite_signature(leaf_model, damaged_leaf_out,...
     remove_small_bites, size_disc_element, ecc_thresh);
 
-[result_TP_FP_FN] = leaf_evaluation_bites(bite_sign, bite_signature_testData,...
+[result_TP_FP_FN] = leaf_evaluation_bites(bite_sign, bite_signatures_out,...
     5, 12, 0.5);
 
 figure; imshowpair(uint8(leaf_model), uint8(bite_sign));
 title('Leaf model and Bite segments');
 
+figure; imshowpair(uint8(bite_signatures_out), uint8(bite_sign));
+title('Ground-Truth bites and Detected bite segments');
+
+%% BITE BOUNDING BOXES
+ st = regionprops(bite_sign, 'BoundingBox' );
+ 
+ bite = imoverlay(uint8(damaged_leaf_out), bite_sign, 'g');
+ figure(4); imshow(bite);
+ figure(4)
+ 
+ for k = 1 : length(st)
+  thisBB = st(k).BoundingBox;
+  rectangle('Position', [thisBB(1),thisBB(2),thisBB(3),thisBB(4)],...
+  'EdgeColor','r','LineWidth',2 )
+ end
+
+%%
+fprintf('#### INSECT PREDATION - BITE SEGMENTS #### \n')
+
 fprintf('True positive bites: %i\nFalse positive bites: %i\nFalse negative bites: %i\n',...
     result_TP_FP_FN(1), result_TP_FP_FN(2), result_TP_FP_FN(3))
 
 %% Leaf reconstruction evaluation
-% Leaf reconstruction using the retrived model
-reconstructed_leaf_1  = leaf_reconstruction(leaf_model, damaged_leaf_out);
 
-[resultQuality_1, resultDistances_1] = leaf_evaluation_quality(img, reconstructed_leaf_1);
+fprintf('#### LEAF RECONSTRUCTION #### \n')
+
+% Leaf reconstruction using the retrived model
+reconstructed_leaf_1  = leaf_model; %leaf_reconstruction(leaf_model, damaged_leaf_out);
+
+% only leaf regions that are in the leaf model
+healthy_leaf_out_based_model = healthy_leaf_out.*leaf_model_mask;
+
+[resultQuality_1, resultDistances_1] = leaf_evaluation_quality(healthy_leaf_out_based_model, reconstructed_leaf_1);
 SSIM_reconstruction_1 = resultQuality_1(1);
 
-figure; imshowpair(uint8(img), uint8(reconstructed_leaf_1), 'montage')
+figure; imshowpair(uint8(healthy_leaf_out_based_model), uint8(reconstructed_leaf_1), 'montage')
 title('Health leaf and reconstructed with the retrieved model')
 
 fprintf('SSSIM model (Leaf Model): %1.4f\n', SSIM_reconstruction_1);
@@ -156,10 +186,13 @@ fprintf('SSSIM model (Leaf Model): %1.4f\n', SSIM_reconstruction_1);
 % Leaf reconstruction using image blending
 reconstructed_leaf_2  = leaf_blending(leaf_model, damaged_leaf_out);
 
-[resultQuality_2, resultDistances_2] = leaf_evaluation_quality(img, reconstructed_leaf_2);
+% only leaf regions that are in the leaf model
+healthy_leaf_out_based_model = healthy_leaf_out.*leaf_model_mask;
+
+[resultQuality_2, resultDistances_2] = leaf_evaluation_quality(healthy_leaf_out_based_model, reconstructed_leaf_2);
 SSIM_reconstruction_2 = resultQuality_2(1);
 
-figure; imshowpair(uint8(img), uint8(reconstructed_leaf_2), 'montage')
+figure; imshowpair(uint8(healthy_leaf_out_based_model), uint8(reconstructed_leaf_2), 'montage')
 title('Health leaf and reconstructed with image blending')
 
 fprintf('SSSIM model (Image Blending): %1.4f\n', SSIM_reconstruction_2);
@@ -168,13 +201,31 @@ fprintf('SSSIM model (Image Blending): %1.4f\n', SSIM_reconstruction_2);
 % Leaf reconstruction using image inpainting
 reconstructed_leaf_3  = leaf_inpaint(leaf_model, damaged_leaf_out);
 
-[resultQuality_3, resultDistances_3] = leaf_evaluation_quality(img, reconstructed_leaf_3);
+% only leaf regions that are in the leaf model
+healthy_leaf_out_based_model = healthy_leaf_out.*leaf_model_mask;
+
+[resultQuality_3, resultDistances_3] = leaf_evaluation_quality(healthy_leaf_out_based_model, reconstructed_leaf_3);
 SSIM_reconstruction_3 = resultQuality_3(1);
 
-figure; imshowpair(uint8(img), uint8(reconstructed_leaf_3), 'montage')
+figure; imshowpair(uint8(healthy_leaf_out_based_model), uint8(reconstructed_leaf_3), 'montage')
 title('Health leaf and reconstructed with inpaint')
-fprintf('SSSIM model (Image Inpaint: %1.4f\n', SSIM_reconstruction_3);
+fprintf('SSSIM model (Image Inpaint): %1.4f\n', SSIM_reconstruction_3);
 
 
+%% LEAF CONTOUR
+bin = leaf_model_mask;
+bin_c = bwmorph(bin,'remove');
+bin_l = logical(damaged_leaf_out(:,:,2));
 
+bin_f = bin_c & ~bin_l;
+bin_f2 = bwareaopen(bin_f,10);
+
+se = strel('square',2);
+bin_f2 = imdilate(bin_f2, se);
+
+% only damaged leaf regions that are in the leaf model
+damaged_leaf_out_based_model = damaged_leaf_out.*leaf_model_mask;
+
+overlay = imoverlay(uint8(damaged_leaf_out_based_model), bin_f2, 'r');
+figure; imshow(overlay);
 

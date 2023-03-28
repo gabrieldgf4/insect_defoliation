@@ -14,9 +14,11 @@ function reconstructed_leaf  = leaf_inpaint(leaf_model, damaged_leaf_out)
     mask = double(~damaged_leaf_out_mask);
     reconstructed_leaf = inpaintBCT(damaged_leaf_out,'orderD',mask,'guidanceC',[26 5550 1 1]);
 
-    cHull = bwconvhull(damaged_leaf_out_mask);
+%     cHull = bwconvhull(damaged_leaf_out_mask);
     
-    mask_final = leaf_model_mask & cHull;
+%     mask_final = leaf_model_mask | cHull;
+%     mask_final = leaf_model_mask & cHull;
+    mask_final = leaf_model_mask;
     
     reconstructed_leaf = reconstructed_leaf.*mask_final;
 end

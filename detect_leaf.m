@@ -2,8 +2,8 @@
 %   
 % Gabriel da Silva Vieira (INF/UFG, IFGoiano (BRAZIL) - 2022) 
 
-function [damaged_leaf_out, healthy_leaf_out, damaged_areas_out] =...
-    detect_leaf(damaged_leaf, healthy_leaf, damaged_areas)
+function [damaged_leaf_out, healthy_leaf_out, damaged_areas_out, bite_signatures_out] =...
+    detect_leaf(damaged_leaf, healthy_leaf, damaged_areas, bite_signatures)
 
 damaged_leaf = double(damaged_leaf);
 healthy_leaf = double(healthy_leaf);
@@ -51,13 +51,13 @@ lines = central_line;
 %    end
 % end   
 
-[damaged_leaf_out, healthy_leaf_out, damaged_areas_out] =...
-    rotate_image(damaged_leaf, healthy_leaf, damaged_areas, lines.theta);
+[damaged_leaf_out, healthy_leaf_out, damaged_areas_out, bite_signatures_out] =...
+    rotate_image(damaged_leaf, healthy_leaf, damaged_areas, bite_signatures, lines.theta);
 
 end
 
-function [damaged_leaf_out, healthy_leaf_out, damaged_areas_out] =...
-    rotate_image(damaged_leaf, healthy_leaf, damaged_areas, theta2)
+function [damaged_leaf_out, healthy_leaf_out, damaged_areas_out, bite_signatures_out] =...
+    rotate_image(damaged_leaf, healthy_leaf, damaged_areas, bite_signatures, theta2)
 
 [height, width, ~] = size(damaged_leaf);
 
@@ -74,6 +74,8 @@ tform = affine2d(Rimage);
 [damaged_leaf_rot, ~] = imwarp(damaged_leaf, tform); 
 [healthy_leaf_rot, ~] = imwarp(healthy_leaf, tform);
 [damaged_areas_rot, ~] = imwarp(damaged_areas, tform);
+[bite_signatures_rot, ~] = imwarp(bite_signatures, tform);
+
     
 bw1 = damaged_leaf_rot(:,:,2) > 0;
 [rows_ref1, columns_ref1] = find(bw1);
@@ -84,10 +86,12 @@ bw2 = healthy_leaf_rot(:,:,2) > 0;
 damaged_leaf_crop = damaged_leaf_rot(min(rows_ref1):max(rows_ref1), min(columns_ref1):max(columns_ref1), : );
 healthy_leaf_crop = healthy_leaf_rot(min(rows_ref2):max(rows_ref2), min(columns_ref2):max(columns_ref2), : );
 damaged_areas_crop = damaged_areas_rot(min(rows_ref2):max(rows_ref2), min(columns_ref2):max(columns_ref2), : );
+bite_signatures_crop = bite_signatures_rot(min(rows_ref2):max(rows_ref2), min(columns_ref2):max(columns_ref2), : );
 
 % prepare the model
 damaged_leaf_out = imresize(damaged_leaf_crop, [height, width], 'nearest', 'Antialiasing', false);
 healthy_leaf_out = imresize(healthy_leaf_crop, [height, width], 'nearest', 'Antialiasing', false);
 damaged_areas_out = imresize(damaged_areas_crop, [height, width], 'nearest', 'Antialiasing', false);
+bite_signatures_out = imresize(bite_signatures_crop, [height, width], 'nearest', 'Antialiasing', false);
 
 end
