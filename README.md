@@ -12,22 +12,7 @@ Original papers URL:
 
 [https://ieeexplore.ieee.org/document/9529869](https://ieeexplore.ieee.org/document/9529869)
 
-If you use this project, cite:
 
-    @article{gabrielIPA2022,
-        Author = Author={Vieira, Gabriel and 
-                  Fonseca, Afonso and
-                  Sousa, Naiane and
-                  Ferreira, Julio and
-                  Soares, Fabrizzio},
-        Title = {An automatic method for estimating foliar defoliation with border damage},
-        journal={Information Processing in Agriculture},
-        volume={},
-        pages={},
-        doi={},
-        url = {},
-        year={2022}
-    }
 
 <img src="https://user-images.githubusercontent.com/63321757/180870855-387484c8-6edd-4c7c-9c76-83218c656767.png" width=75% height=75%>
 
